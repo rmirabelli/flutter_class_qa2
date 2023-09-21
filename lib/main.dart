@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:qa_session_2/answer.dart';
 import 'package:qa_session_2/question_data.dart';
+import 'package:qa_session_2/quiz.dart';
+import 'result.dart';
 
 void main() {
   runApp(const MainApp());
@@ -15,17 +17,12 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   var _questionIndex = 0;
-  int get questionIndex => _questionIndex;
-  set questionIndex(int newValue) {
-    if (newValue >= questions.length) {
-      newValue = 0;
-    }
-    _questionIndex = newValue;
-  }
+  var _totalScore = 0;
 
-  incrementQuestion() {
+  void answerQuestion(int score) {
+    _totalScore += score;
     setState(() {
-      questionIndex++;
+      _questionIndex++;
     });
   }
 
@@ -33,18 +30,12 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Column(
-            children: [
-              Text(
-                questions[questionIndex]['questionText'] as String,
+        body: _questionIndex >= questions.length
+            ? Result(_totalScore)
+            : Quiz(
+                onAnswer: answerQuestion,
+                questionIndex: _questionIndex,
               ),
-              ...(questions[_questionIndex]['answers'] as List<String>).map((answerText) {
-                return Answer(answerText, incrementQuestion);
-              }).toList(),
-            ],
-          ),
-        ),
       ),
     );
   }
